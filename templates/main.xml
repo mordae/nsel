@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+   <channel>
+      <title>ČTK NewsSelect (Hlavní)</title>
+      <link>http://nsel.cz/cs/NewsSel/QueryRes/1</link>
+      <description>Česká tisková kancelář - Hlavní kanál</description>
+      <language>cs-CZ</language>
+      <pubDate>{{pub_date}}</pubDate>
+      <lastBuildDate>{{posts[0]['time']}}</lastBuildDate>
+      {% for post in posts: %}
+      <item>
+        <title>{{post['title']}}</title>
+        <description>{{post['body']}}</description>
+        <pubDate>{{post['time']}}</pubDate>
+        <guid>http://nsel.cz/cs/NewsSel/QueryRes/1#{{post['id']}}</guid>
+      </item>
+      {% endfor %}
+   </channel>
+</rss>
