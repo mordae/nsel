@@ -92,8 +92,7 @@ def make_app(login, password):
 if __name__ == '__main__':
     import sys
     app = make_app(*sys.argv[1:])
-    app.debug = True
-    app.run(port=8888)
+    app.run(host='::', port=8888)
 
 
 # vim:set sw=4 ts=4 et:
