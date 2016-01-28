@@ -3,7 +3,6 @@
 
 from bs4 import BeautifulSoup
 from time import strptime, mktime, strftime
-from json import load, dump
 from os.path import exists
 from hashlib import sha256
 
@@ -57,19 +56,12 @@ def make_app(login, password):
     secret = (login + ':' + password).encode('utf8')
     valid_token = sha256(secret).hexdigest()[:16]
 
-    if exists('cookies.js'):
-        with open('cookies.js') as fp:
-            s.cookies.update(load(fp))
-    else:
-        s.post(LOGIN_URL, [
-            ('UserName', login),
-            ('Password', password),
-            ('RememberMe', 'true'),
-            ('RememberMe', 'false'),
-        ])
-
-        with open('cookies.js', 'w') as fp:
-            dump(dict(s.cookies), fp)
+    s.post(LOGIN_URL, [
+        ('UserName', login),
+        ('Password', password),
+        ('RememberMe', 'true'),
+        ('RememberMe', 'false'),
+    ])
 
     @app.route('/<token>/main.rss')
     def main_rss(token):
@@ -78,9 +70,6 @@ def make_app(login, password):
 
         pub_date = now()
         posts = list(iter_posts(s))
-
-        with open('cookies.js', 'w') as fp:
-            dump(dict(s.cookies), fp)
 
         return flask.render_template('main.xml', **locals()), 200, {
             'Content-Type': 'application/rss+xml; charset=UTF-8',
