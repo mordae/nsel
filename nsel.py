@@ -9,6 +9,8 @@ from hashlib import sha256
 import flask
 import requests
 
+from cookies import ShelvedCookieJar
+
 LOGIN_URL = 'http://nsel.cz/'
 MAIN_URL = 'http://nsel.cz/cs/NewsSel/QueryRes/1'
 BODY_URL = 'http://nsel.cz/cs/NewsSel/GetDetailPartial?showRestriction=140&id=%s'
@@ -52,9 +54,11 @@ def iter_posts(s):
 def make_app(login, password):
     app = flask.Flask(__name__)
     s = requests.Session()
+    s.cookies = ShelvedCookieJar('cookies')
 
     secret = (login + ':' + password).encode('utf8')
     valid_token = sha256(secret).hexdigest()[:16]
+    print('Feed at /{}/main.rss'.format(valid_token))
 
     s.post(LOGIN_URL, [
         ('UserName', login),
