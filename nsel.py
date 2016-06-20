@@ -14,7 +14,7 @@ from cookies import ShelvedCookieJar
 
 LOGIN_URL = 'http://nsel.cz/'
 MAIN_URL = 'http://nsel.cz/cs/NewsSel/QueryRes/1'
-BODY_URL = 'http://nsel.cz/cs/NewsSel/GetDetailPartial?showRestriction=140&id=%s'
+BODY_URL = 'http://nsel.cz/cs/NewsSel/GetDetailPartial?showRestriction=10000&id=%s'
 
 cleaner = Cleaner()
 
