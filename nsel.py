@@ -32,6 +32,7 @@ def fetch_body(s, post):
         r = s.get(BODY_URL % post)
         bs = BeautifulSoup(r.text, 'html5lib')
         body = str(bs.select_one('div.text'))
+        print(' * Fetched post', post)
         cache[post] = cleaner.clean_html(body)
 
     return cache[post]
@@ -56,6 +57,10 @@ def iter_posts(s):
 
 def make_app(login, password):
     app = flask.Flask(__name__)
+    app.config.update({
+        'PROPAGATE_EXCEPTIONS': True
+    })
+
     s = requests.Session()
     s.cookies = ShelvedCookieJar('cookies')
 
