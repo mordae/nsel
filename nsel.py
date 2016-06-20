@@ -25,7 +25,7 @@ def fix_time(s):
     return t.strftime('%a, %e %b %Y %H:%M:%S +0000')
 
 def now():
-    return datetime.strftime('%Y-%m-%d %H:%M:%S +1000')
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S +1000')
 
 def fetch_body(s, post):
     if post not in cache:
