@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from time import strptime, mktime, strftime
 from os.path import exists
 from hashlib import sha256
+from lxml.html.clean import Cleaner
 
 import flask
 import requests
@@ -15,8 +16,9 @@ LOGIN_URL = 'http://nsel.cz/'
 MAIN_URL = 'http://nsel.cz/cs/NewsSel/QueryRes/1'
 BODY_URL = 'http://nsel.cz/cs/NewsSel/GetDetailPartial?showRestriction=140&id=%s'
 
-cache = {}
+cleaner = Cleaner()
 
+cache = {}
 
 def fix_time(s):
     t = strptime(s, '%d.%m.%Y %H:%M:%S')
@@ -29,7 +31,8 @@ def fetch_body(s, post):
     if post not in cache:
         r = s.get(BODY_URL % post)
         bs = BeautifulSoup(r.text, 'html5lib')
-        cache[post] = bs.select_one('div.text').text
+        body = str(bs.select_one('div.text'))
+        cache[post] = cleaner.clean_html(body)
 
     return cache[post]
 
