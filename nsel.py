@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from time import strptime, mktime, strftime
+from datetime import datetime
 from os.path import exists
 from hashlib import sha256
 from lxml.html.clean import Cleaner
@@ -21,8 +21,8 @@ cleaner = Cleaner()
 cache = {}
 
 def fix_time(s):
-    t = strptime(s, '%d.%m.%Y %H:%M:%S')
-    return strftime('%Y-%m-%d %H:%M:%S +1000', t)
+    t = datetime.strptime(s, '%d.%m.%Y %H:%M:%S')
+    return t.strftime('%a, %e %b %Y %H:%M:%S +0000')
 
 def now():
     return strftime('%Y-%m-%d %H:%M:%S +1000')
