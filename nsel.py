@@ -61,7 +61,7 @@ def make_app(login, password):
 
     secret = (login + ':' + password).encode('utf8')
     valid_token = sha256(secret).hexdigest()[:16]
-    print('Feed at /{}/main.rss'.format(valid_token))
+    print(' * Feed at /{}/main.rss'.format(valid_token))
 
     s.post(LOGIN_URL, [
         ('UserName', login),
