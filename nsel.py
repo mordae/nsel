@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -tt
 # -*- coding: utf-8 -*-
 
+from sys import stderr
 from bs4 import BeautifulSoup
 from datetime import datetime
 from os.path import exists
@@ -32,7 +33,7 @@ def fetch_body(s, post):
         r = s.get(BODY_URL % post)
         bs = BeautifulSoup(r.text, 'html5lib')
         body = str(bs.select_one('div.text'))
-        print(' * Fetched post', post)
+        print(' * Fetched post', post, file=stderr)
         cache[post] = cleaner.clean_html(body)
 
     return cache[post]
@@ -66,7 +67,7 @@ def make_app(login, password):
 
     secret = (login + ':' + password).encode('utf8')
     valid_token = sha256(secret).hexdigest()[:16]
-    print(' * Feed at /{}/main.rss'.format(valid_token))
+    print(' * Feed at /{}/main.rss'.format(valid_token), file=stderr)
 
     s.post(LOGIN_URL, [
         ('UserName', login),
