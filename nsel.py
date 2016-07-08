@@ -14,6 +14,7 @@ import requests
 from cookies import ShelvedCookieJar
 
 LOGIN_URL = 'http://nsel.cz/'
+LOGOUT_URL = 'http://nsel.cz/cs/NewsSel/LogOff'
 MAIN_URL = 'http://nsel.cz/cs/NewsSel/QueryRes/1'
 BODY_URL = 'http://nsel.cz/cs/NewsSel/GetDetailPartial?showRestriction=10000&id=%s'
 
@@ -55,6 +56,59 @@ def iter_posts(s):
             'body': fetch_body(s, tr.attrs['id']),
         }
 
+def get_logout_token(s):
+    r = s.get(MAIN_URL)
+    bs = BeautifulSoup(r.text, 'html5lib')
+
+    elem = None
+
+    for form in bs.select('form'):
+        if form.attrs.get('name') == 'logoutForm':
+            elem = form.select_one('input')
+            break
+
+    if elem is None:
+        return ''
+
+    return elem.attrs['value']
+
+def do_login(s, login, password):
+    print(' * Logging in...', file=stderr)
+    r = s.post(LOGIN_URL, [
+        ('UserName', login),
+        ('Password', password),
+        ('RememberMe', 'true'),
+        ('RememberMe', 'false'),
+    ])
+
+    cache.clear()
+    right_content = '/cs/NewsSel/QueryRes/' in r.text
+
+    if r.ok and right_content:
+        print(' * Successfully logged in!', file=stderr)
+    else:
+        print(' * Failed to log in!', file=stderr)
+
+    return r.ok and right_content
+
+
+def do_logout(s):
+    print(' * Logging out...', file=stderr)
+    r = s.post(LOGOUT_URL, [
+        ('__RequestVerificationToken', get_logout_token(s))
+    ])
+
+    if r.history:
+        r = r.history[0]
+    cache.clear()
+
+    if r.ok:
+        print(' * Successfully logged out!', file=stderr)
+    else:
+        print(' * Failed to log out!', file=stderr)
+
+    return r.ok
+
 
 def make_app(login, password):
     app = flask.Flask(__name__)
@@ -69,12 +123,23 @@ def make_app(login, password):
     valid_token = sha256(secret).hexdigest()[:16]
     print(' * Feed at /{}/main.rss'.format(valid_token), file=stderr)
 
-    s.post(LOGIN_URL, [
-        ('UserName', login),
-        ('Password', password),
-        ('RememberMe', 'true'),
-        ('RememberMe', 'false'),
-    ])
+    do_login(s, login, password)
+
+    @app.route('/<token>/login')
+    def login_route(token):
+        if token != valid_token:
+            return 'Denied', 401
+
+        r = do_login(s, login, password)
+        return flask.jsonify(result=r)
+
+    @app.route('/<token>/logout')
+    def logout_route(token):
+        if token != valid_token:
+            return 'Denied', 401
+
+        r = do_logout(s)
+        return flask.jsonify(result = r)
 
     @app.route('/<token>/main.rss')
     def main_rss(token):
