@@ -56,6 +56,15 @@ def iter_posts(s):
             'body': fetch_body(s, tr.attrs['id']),
         }
 
+def remove_obsolete(posts):
+    titles = {}
+
+    for post in posts:
+        titles[post['title']] = post
+
+    for post in sorted(titles.values(), key=lambda post: post['id']):
+        yield post
+
 def get_logout_token(s):
     r = s.get(MAIN_URL)
     bs = BeautifulSoup(r.text, 'html5lib')
@@ -147,7 +156,7 @@ def make_app(login, password):
             return 'Denied', 401
 
         pub_date = now()
-        posts = list(iter_posts(s))
+        posts = list(remove_obsolete(iter_posts(s)))
 
         return flask.render_template('main.xml', **locals()), 200, {
             'Content-Type': 'application/rss+xml; charset=UTF-8',
