@@ -3,7 +3,7 @@
 
 from sys import stderr
 from bs4 import BeautifulSoup
-from datetime import datetime
+from time import strftime, strptime, localtime
 from os.path import exists
 from hashlib import sha256
 from lxml.html.clean import Cleaner
@@ -23,11 +23,11 @@ cleaner = Cleaner()
 cache = {}
 
 def fix_time(s):
-    t = datetime.strptime(s, '%d.%m.%Y %H:%M:%S')
-    return t.strftime('%a, %e %b %Y %H:%M:%S +0000')
+    t = strptime(s, '%d.%m.%Y %H:%M:%S')
+    return strftime('%a, %e %b %Y %H:%M:%S %z', localtime())
 
 def now():
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S +1000')
+    return strftime('%a, %e %b %Y %H:%M:%S %z')
 
 def fetch_body(s, post):
     if post not in cache:
