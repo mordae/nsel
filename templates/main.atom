@@ -12,10 +12,8 @@
      <name>ČTK</name>
     </author>
     <published>{{post['time']|newtime}}</published>
-    <content type="xhtml" xml:lang="cs">
-      <div xmlns="http://www.w3.org/1999/xhtml">
-        {{post['body']|safe}}
-      </div>
+    <content type="html">
+      {{post['body']|e}}
     </content>
   </entry>
   {% endfor %}
