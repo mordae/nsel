@@ -8,6 +8,9 @@
   <entry>
     <title>{{post['title']}}</title>
     <id>http://nsel.cz/cs/NewsSel/QueryRes/1#{{post['id']}}</id>
+    <author>
+     <name>ČTK</name>
+    </author>
     <published>{{post['time']|newtime}}</published>
     <content type="xhtml" xml:lang="cs">
       <div xmlns="http://www.w3.org/1999/xhtml">
