@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ <title type="text">NewsSelect (Hlavní)</title>
+  <subtitle type="text">Česká tisková kancelář - Hlavní kanál</subtitle>
+  <updated>{{posts[0]['time']}}</updated>
+  <id>http://nsel.cz/cs/NewsSel/QueryRes/1</id>
+  {% for post in posts: %}
+  <entry>
+    <title>{{post['title']}}</title>
+    <id>http://nsel.cz/cs/NewsSel/QueryRes/1#{{post['id']}}</id>
+    <published>{{post['time']|newtime}}</published>
+    <content type="xhtml" xml:lang="en">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+        {{post['body']|safe}}
+      </div>
+    </content>
+  </entry>
+  {% endfor %}
+</feed>

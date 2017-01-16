@@ -3,7 +3,7 @@
 
 from sys import stderr
 from bs4 import BeautifulSoup
-from time import strftime, strptime, localtime
+from time import strftime, strptime, time, localtime, tzname, mktime, gmtime
 from os.path import exists
 from hashlib import sha256
 from lxml.html.clean import Cleaner
@@ -22,12 +22,9 @@ cleaner = Cleaner()
 
 cache = {}
 
-def fix_time(s):
-    t = strptime(s, '%d.%m.%Y %H:%M:%S')
-    return strftime('%a, %e %b %Y %H:%M:%S %z', localtime())
-
-def now():
-    return strftime('%a, %e %b %Y %H:%M:%S %z')
+def parse_time(s):
+    tm = strptime('{} {}'.format(s, tzname[0]), '%d.%m.%Y %H:%M:%S %Z')
+    return mktime(tm)
 
 def fetch_body(s, post):
     if post not in cache:
@@ -52,7 +49,7 @@ def iter_posts(s):
         yield {
             'id': tr.attrs['id'],
             'title': title.text,
-            'time': fix_time(tr.select_one('span').text),
+            'time': parse_time(tr.select_one('span').text),
             'body': fetch_body(s, tr.attrs['id']),
         }
 
@@ -121,6 +118,17 @@ def do_logout(s):
 
 def make_app(login, password):
     app = flask.Flask(__name__)
+
+    @app.template_filter('oldtime')
+    def oldtime(ts):
+        tm = localtime(ts)
+        return strftime('%a, %e %b %Y %H:%M:%S %z', tm)
+
+    @app.template_filter('newtime')
+    def newtime(ts):
+        tm = gmtime(ts)
+        return strftime('%Y-%m-%dT%H:%M:%SZ', tm)
+
     app.config.update({
         'PROPAGATE_EXCEPTIONS': True
     })
@@ -155,11 +163,22 @@ def make_app(login, password):
         if token != valid_token:
             return 'Denied', 401
 
-        pub_date = now()
+        pub_date = time()
         posts = list(remove_obsolete(iter_posts(s)))
 
-        return flask.render_template('main.xml', **locals()), 200, {
+        return flask.render_template('main.rss', **locals()), 200, {
             'Content-Type': 'application/rss+xml; charset=UTF-8',
+        }
+
+    @app.route('/<token>/main.atom')
+    def main_atom(token):
+        if token != valid_token:
+            return 'Denied', 401
+
+        posts = list(remove_obsolete(iter_posts(s)))
+
+        return flask.render_template('main.atom', **locals()), 200, {
+            'Content-Type': 'application/atom+xml; charset=UTF-8',
         }
 
     return app
