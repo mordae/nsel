@@ -51,6 +51,7 @@ def iter_posts(s):
             'title': title.text,
             'time': parse_time(tr.select_one('span').text),
             'body': fetch_body(s, tr.attrs['id']),
+            'url': BODY_URL % tr.attrs['id'],
         }
 
 def remove_obsolete(posts):

@@ -7,7 +7,7 @@
   {% for post in posts: %}
   <entry>
     <title>{{post['title']}}</title>
-    <id>http://nsel.cz/cs/NewsSel/QueryRes/1#{{post['id']}}</id>
+    <id>{{post['url']|e}}</id>
     <author>
      <name>ČTK</name>
     </author>
