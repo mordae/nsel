@@ -6,12 +6,13 @@
   <id>http://nsel.cz/cs/NewsSel/QueryRes/1</id>
   {% for post in posts: %}
   <entry>
-    <title>{{post['title']}}</title>
+    <title type="html">{{post['title']|e}}</title>
     <id>{{post['url']|e}}</id>
     <author>
      <name>ČTK</name>
     </author>
     <published>{{post['time']|newtime}}</published>
+    <updated>{{post['time']|newtime}}</updated>
     <content type="html">
       {{post['body']|e}}
     </content>

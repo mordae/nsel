@@ -9,7 +9,7 @@
       <lastBuildDate>{{posts[0]['time']|oldtime}}</lastBuildDate>
       {% for post in posts: %}
       <item>
-        <title>{{post['title']}}</title>
+        <title>{{post['title']|e}}</title>
         <description>{{post['body']|e}}</description>
         <pubDate>{{post['time']|oldtime}}</pubDate>
         <guid>{{post['url']|e}}</guid>
