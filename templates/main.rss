@@ -12,7 +12,8 @@
         <title>{{post['title']|e}}</title>
         <description>{{post['body']|e}}</description>
         <pubDate>{{post['time']|oldtime}}</pubDate>
-        <guid>{{post['url']|e}}</guid>
+        <guid>CTK-{{post['id']|e}}</guid>
+        <link>{{post['url']|e}}</link>
       </item>
       {% endfor %}
    </channel>
