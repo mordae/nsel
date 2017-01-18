@@ -12,7 +12,7 @@
         <title>{{post['title']|e}}</title>
         <description>{{post['body']|e}}</description>
         <pubDate>{{post['time']|oldtime}}</pubDate>
-        <guid>CTK-{{post['id']|e}}</guid>
+        <guid>{{post['url']|e}}</guid>
         <link>{{post['url']|e}}</link>
       </item>
       {% endfor %}
